@@ -1,68 +1,62 @@
-// get randomized value of computer.
-let getComputerChoice = () => {
-    let randomNumber = Math.floor(Math.random() * 100);
-    if (randomNumber <= 33) {
-        return "rock"
-    } else if (randomNumber <= 66) {
-        return "paper";
-    } else {
-        return "scissors";
-    }
-}
-// get value of player.
+// select the elements necessary
+const buttons = document.querySelectorAll("button");
 
-let getHumanChoice = () => {
-    let choice = prompt("Rock, Paper or Scissors?")
-    choice = choice.toLowerCase();
-    if(choice === "rock") {
-        return "rock";
-    } else if (choice === "paper") {
-        return "paper";
-    } else {
-        return "scissors";
-    }
+//get computer's value
+function getComputerChoice() {
+    let choices = ["Rock", "Paper", "Scissor"]
+    return choices[Math.floor(Math.random() * choices.length)];
+};
+
+// function to disable buttons when done
+
+function disableButton() {
+    buttons.forEach(btn => {
+        btn.disabled = true;
+    })
 }
 
-// tracking the scores
-let humanScore = 0;
+//initiate the score
+let playerScore = 0;
 let computerScore = 0;
+//make the game logic
+function playRound (playerChoice) {
+    let computerChoice = getComputerChoice();
+    let result = '';
+    
 
-// the conditions and rules of the game (the logic)
-
-function playRound(humanChoice, computerChoice) {
-    if (humanChoice === "rock" && computerChoice === "paper") {
+    if ((playerChoice == 'Rock' && computerChoice == 'Scissor')
+    || (playerChoice== 'Paper' && computerChoice == 'Rock')
+    || (playerChoice == 'Scissor' && computerChoice == 'Paper')) {
+        result = `${playerChoice} beats ${computerChoice}! You win!`
+        playerScore++;
+        if(playerScore == 5) {
+            result = `You won the game, reload to play again`;
+            disableButton();
+        }
+    } else if ((playerChoice == 'Scissor' && computerChoice == 'Rock')
+    || (playerChoice== 'Rock' && computerChoice == 'Paper')
+    || (playerChoice == 'Paper' && computerChoice == 'Scissor')) {
+        result = `${computerChoice} beats ${playerChoice}, You lost.`
         computerScore++;
-        console.log("Paper beats Rock, you lost!")
-    } else if (humanChoice === "rock" && computerChoice === "scissors") {
-        humanScore++;
-        console.log("Rock beats scissors, you won!")
-    } else if (humanChoice === "scissors" && computerChoice === "rock") {
-        computerScore++;
-        console.log("Rock beats scissors, you lost!")
-    } else if (humanChoice === "scissors" && computerChoice === "paper") {
-        humanScore++;
-        console.log("Scissors beats paper, you won!")
-    } else if (humanChoice === "paper" && computerChoice === "rock") {
-        humanScore++;
-        console.log("Paper beats rock, you won!")
-    } else if (humanChoice === "paper" && computerChoice === "scissors") {
-        computerScore++;
-        console.log("Scissors beat paper, you lost!")
+        if(computerScore == 5) {
+            result = `Computer won the game, reload to play again`;
+            disableButton();
+        }
     } else {
-        console.log("It was a tie.")
+        result = `It's a tie.`
     }
+
+    let endScore = document.getElementById("score")
+    endScore.textContent = `${playerScore} - ${computerScore}`
+    let endResult = document.getElementById("result")
+    endResult.textContent = result;
+    return;
 }
 
+buttons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        playRound(e.target.textContent)
+    })
+})
 
-playGame();
-// Make the game a more competitive one (5 rounds to decide a winner);
 
-function playGame () {
-    for(let i = 0; i < 5; i++) {
-        const humanSelection = getHumanChoice();
-    const computerSelection = getComputerChoice();
-
-    playRound(humanSelection, computerSelection);
-    }
-    console.log('The last score is ' + humanScore + ' - ' + computerScore)
-}
